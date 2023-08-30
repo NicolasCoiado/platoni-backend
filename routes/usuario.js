@@ -1,9 +1,10 @@
 import express from "express";
-import { getUsuarios, addUsuario, login } from "../controllers/usuario.js";
+import { addUsuario, login, recuperacao, resetsenha } from "../controllers/usuario.js";
 
 const routes = express.Router();
 
-routes.get("/user", getUsuarios);
 routes.post("/cadastro", addUsuario);
 routes.post("/", login);
+routes.post("/recuperacao", recuperacao);
+routes.post("/resetsenha", resetsenha);
 export default routes;

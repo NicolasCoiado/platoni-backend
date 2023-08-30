@@ -1,18 +1,9 @@
-import db from "../config/db.js";
+import db from "../models/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import mailer from "../models/mailer.js";
 import "dotenv/config";
-
-export const getUsuarios = (_, res) => {
-  const sql = "SELECT * FROM usuario";
-  db.query(sql, (error, results) => {
-    if (error) {
-      return res.status(404).json(error);
-    } else {
-      return res.status(200).json(results);
-    }
-  });
-};
 
 export const addUsuario = async (req, res) => {
   const sql =
@@ -59,4 +50,50 @@ export const login = async (req, res) => {
       }
     }
   });
+};
+
+export const recuperacao = async (req, res) => {
+  const {email} = req.body;
+  const token = crypto.randomBytes(5).toString("hex");
+  const expiracao = new Date();
+  expiracao.setHours(expiracao.getHours() + 1);
+
+  const consulta = "SELECT * FROM usuario WHERE usuario.email=?";
+  const atualizacao = "UPDATE usuario SET token=?, expiracao_token=? WHERE email=?";
+
+  db.query(consulta, [email], async (erro, usuario) => {
+    try {
+      if (!usuario[0]) {
+        return res.status(422).json({ msg: "Usuário não encontrado!", email});
+      } else {
+        mailer.sendMail(
+          {
+            to: email,
+            from: "seucert@gmail.com",
+            subject: "Recuperação de senha: SeuCERT!",
+            html: "<h1>Esqueceu sua senha?</h1><p>Aparentemente você deseja trocar sua senha no SeuCERT.</p> <p>Caso você de fato queira redefinir sua senha, utilize o token:</p> <h2>"+token+"</h2>",
+          },
+          (err) => {
+            if (err)
+              return res.status(500).send({msg: "Não é possível enviar e-mail com senha esquecida!"});
+          }
+        );
+      }
+    } catch (err) {
+      res.status(500).json({ erro: "Houve um erro na recuperação de senha!" });
+    }
+  }),
+  db.query(atualizacao, [token, expiracao, email], async (erro, resultado)=>{
+    return res.status(200).json({ msg: "Usuario atualizado"});
+  });
+};
+
+export const resetsenha = async (req, res) => {
+  const {email, token, password} = req.body;
+
+  try{
+
+  }catch(erro){
+    res.status(500).send({erro: "Houve um erro na substituição de senhas"})
+  }
 };
