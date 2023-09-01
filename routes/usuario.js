@@ -5,6 +5,6 @@ const routes = express.Router();
 
 routes.post("/cadastro", addUsuario);
 routes.post("/", login);
-routes.post("/recuperacao", recuperacao);
-routes.post("/resetsenha", resetsenha);
+routes.put("/recuperacao", recuperacao);
+routes.put("/reset_senha", resetsenha);
 export default routes;

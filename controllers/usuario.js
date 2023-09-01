@@ -6,14 +6,14 @@ import mailer from "../models/mailer.js";
 import "dotenv/config";
 
 export const addUsuario = async (req, res) => {
-  const sql =
+  const insert =
     "INSERT INTO usuario (nome_usuario, email, senha, telefone) VALUES (?,?,?,?)";
 
   const salt = await bcrypt.genSalt(12);
   const { nome_usuario, email, telefone } = req.body;
   const senha = bcrypt.hashSync(req.body.senha, salt);
 
-  db.query(sql, [nome_usuario, email, senha, telefone], (error, results) => {
+  db.query(insert, [nome_usuario, email, senha, telefone], (error, results) => {
     if (error) {
       return res.status(402).json(error);
     } else {
@@ -24,8 +24,8 @@ export const addUsuario = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, senha } = req.body;
-  const sql = "SELECT * FROM usuario WHERE usuario.email=?";
-  db.query(sql, [email], async (erro, usuario) => {
+  const select = "SELECT * FROM usuario WHERE usuario.email=?";
+  db.query(select, [email], async (erro, usuario) => {
     if (!usuario[0]) {
       return res.status(422).json({ msg: "Usuário não encontrado!" });
     } else {
@@ -75,7 +75,7 @@ export const recuperacao = async (req, res) => {
           },
           (err) => {
             if (err)
-              return res.status(500).send({msg: "Não é possível enviar e-mail com senha esquecida!"});
+              return res.status(500).send({erro: "Não é possível enviar e-mail com senha esquecida!"});
           }
         );
       }
@@ -89,11 +89,39 @@ export const recuperacao = async (req, res) => {
 };
 
 export const resetsenha = async (req, res) => {
-  const {email, token, password} = req.body;
+  const {email, token} = req.body;
+  const consulta = "SELECT * FROM usuario WHERE usuario.email=?";
+  const update ="UPDATE usuario SET `senha` = ? WHERE `email` = ?"
+  const agora = new Date();
+  const certo = false;
+  const salt = await bcrypt.genSalt(12);
+  const senha = bcrypt.hashSync(req.body.senha, salt)
 
-  try{
-
-  }catch(erro){
-    res.status(500).send({erro: "Houve um erro na substituição de senhas"})
+  db.query(consulta, [email, token, senha], async (erro, usuario) => {
+    try{
+      if (!usuario[0]) {
+        return res.status(422).json({ erro: "Usuário não encontrado!"});
+      } else {
+         if(token !== usuario[0].token){
+          res.status(500).send({erro: "Código de verificação incorreto!"})
+        }else{
+          if(usuario[0].expiracao_token>agora)
+            // certo = true;
+            console.log(agora)
+          else
+            res.status(422).send({erro: "Código expirado!"})
+        }
+      }
+    }catch(erro){
+      res.status(500).send(erro)
+    }
+  });
+  if(certo === true){
+    db.query(update, [email, token, senha], async (erro, resultado) => {
+        if(erro)
+          res.status(500).send(erro)
+        else
+          return res.status(200).json({ msg: "Usuario atualizado"});
+    });
   }
 };
