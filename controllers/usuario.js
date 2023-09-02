@@ -91,9 +91,8 @@ export const recuperacao = async (req, res) => {
 export const resetsenha = async (req, res) => {
   const {email, token} = req.body;
   const consulta = "SELECT * FROM usuario WHERE usuario.email=?";
-  const update ="UPDATE usuario SET `senha` = ? WHERE `email` = ?"
+  const atualizacao ="UPDATE usuario SET `senha` = ? WHERE usuario.email=?"
   const agora = new Date();
-  const certo = false;
   const salt = await bcrypt.genSalt(12);
   const senha = bcrypt.hashSync(req.body.senha, salt)
 
@@ -102,26 +101,25 @@ export const resetsenha = async (req, res) => {
       if (!usuario[0]) {
         return res.status(422).json({ erro: "Usuário não encontrado!"});
       } else {
-         if(token !== usuario[0].token){
+         if(token != usuario[0].token){
           res.status(500).send({erro: "Código de verificação incorreto!"})
         }else{
-          if(usuario[0].expiracao_token>agora)
-            // certo = true;
-            console.log(agora)
-          else
+          if(usuario[0].expiracao_token>agora){
+            db.query(atualizacao, [senha, email], async (erro, resultado)=>{
+              if(erro)
+                // return res.status(422).json({ erro: "Erro"});
+                console.log("Erro")
+              else
+                // return res.status(200).json({ erro: "Usuário atualizado!"});
+                console.log("Foi")
+              });
+          }else{
             res.status(422).send({erro: "Código expirado!"})
+          }
         }
       }
     }catch(erro){
-      res.status(500).send(erro)
+      res.status(500).send("Deu ruim no começo")
     }
   });
-  if(certo === true){
-    db.query(update, [email, token, senha], async (erro, resultado) => {
-        if(erro)
-          res.status(500).send(erro)
-        else
-          return res.status(200).json({ msg: "Usuario atualizado"});
-    });
-  }
 };
