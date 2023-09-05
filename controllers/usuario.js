@@ -90,36 +90,36 @@ export const recuperacao = async (req, res) => {
 
 export const resetsenha = async (req, res) => {
   const {email, token} = req.body;
-  const consulta = "SELECT * FROM usuario WHERE usuario.email=?";
-  const atualizacao ="UPDATE usuario SET `senha` = ? WHERE usuario.email=?"
   const agora = new Date();
   const salt = await bcrypt.genSalt(12);
   const senha = bcrypt.hashSync(req.body.senha, salt)
 
-  db.query(consulta, [email, token, senha], async (erro, usuario) => {
-    try{
-      if (!usuario[0]) {
-        return res.status(422).json({ erro: "Usuário não encontrado!"});
-      } else {
-         if(token != usuario[0].token){
+  db.query("SELECT * FROM usuario WHERE usuario.email=?", [email, token], async (erro, resultado) => {
+    try {
+      const usuario = resultado[0];
+      if (!usuario) {
+        res.status(422).json({ erro: "Houve um erro ao redefinir a senha." });
+      }else{
+        if(token != usuario.token){
           res.status(500).send({erro: "Código de verificação incorreto!"})
         }else{
-          if(usuario[0].expiracao_token>agora){
-            db.query(atualizacao, [senha, email], async (erro, resultado)=>{
+          if(usuario.expiracao_token>agora){
+            db.query("UPDATE usuario SET senha = ?, token = NULL, expiracao_token = NULL WHERE usuario.email=?", [senha, email], async (erro, resultado)=>{
               if(erro)
-                // return res.status(422).json({ erro: "Erro"});
-                console.log("Erro")
+                return res.status(422).json({ erro: "Erro"});
               else
-                // return res.status(200).json({ erro: "Usuário atualizado!"});
-                console.log("Foi")
+                return res.status(200).json({ erro: "Usuário atualizado!"});
               });
           }else{
             res.status(422).send({erro: "Código expirado!"})
           }
         }
       }
-    }catch(erro){
-      res.status(500).send("Deu ruim no começo")
+    } catch (err) {
+      res.status(500).json({ erro: "Houve um erro ao redefinir a senha." });
     }
   });
 };
+
+
+     
