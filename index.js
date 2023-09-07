@@ -1,5 +1,5 @@
 import express from "express"
-import rotas from "./routes/usuario.js"
+import rotas from "./rotas/rota-usuario.js"
 import "dotenv/config"
 
 const app = express()
