@@ -7,7 +7,7 @@ import {
     recuperacao,
     resetSenha,
     editUsuario,
-    confirmacao_email,
+    codigo_email,
     editEmail
 } from "../modelos/usuario.js"
 
@@ -18,7 +18,7 @@ routes.post("/", login)
 routes.put("/recuperacao", recuperacao)
 routes.put("/reset_senha", resetSenha)
 routes.put("/edit_usuario", verificaToken, editUsuario)
-routes.put("/confirmacao_email", verificaToken, confirmacao_email)
+routes.put("/codigo_email", verificaToken, codigo_email)
 routes.put("/edit_email", verificaToken, editEmail)
 
 

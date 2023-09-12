@@ -10,7 +10,7 @@ export const addUsuario = async (req, res) => {
     const { nome_usuario, email, telefone } = req.body
     const senha = bcrypt.hashSync(req.body.senha, salt)
 
-    db.query(insert, [nome_usuario, email, senha, telefone],(erro) => {
+    db.query(insert, [nome_usuario, email, senha, telefone],(erro, resultado) => {
             if (erro)
                 return res.status(402).json(erro)
             else
@@ -22,7 +22,7 @@ export const addUsuario = async (req, res) => {
 export const login = async (req, res) => {
     const { email, senha } = req.body
     const select = "SELECT * FROM usuario WHERE usuario.email=?"
-    db.query(select, [email], async (usuario) => {
+    db.query(select, [email], async (erro, usuario) => {
         if (!usuario[0]) {
             return res.status(422).json({ msg: "Usuário não encontrado!" })
         } else {
@@ -73,7 +73,7 @@ export const recuperacao = async (req, res) => {
         }
     }),
     db.query(atualizacao, [token, expiracao, email], async () => {
-        return res.status(200).json({ msg: "Usuario atualizado." })
+        return res.status(200).json({ msg: "Email de recuperação enviado." })
     })
 }
 
@@ -128,7 +128,7 @@ export const editUsuario = async (req, res) => {
     });
 }
 
-export const confirmacao_email = async (req, res) => {
+export const codigo_email = async (req, res) => {
     const { email, novoEmail } = req.body
     const token = crypto.randomBytes(5).toString("hex")
     const expiracao = new Date()
@@ -154,12 +154,12 @@ export const confirmacao_email = async (req, res) => {
                     }
                 )
             }
-        } catch (err) {
+        } catch (erro) {
             res.status(500).json({msg: "Houve um erro na edição do usuário."})
         }
     }),
-    db.query(atualizacao, [token, expiracao, novoEmail], async () => {
-        return res.status(200).json({ msg: "Usuario atualizado." })
+    db.query(atualizacao, [token, expiracao, email], async () => {
+        return res.status(200).json({ msg: "Email de edição enviado." })
     })
 }
 
@@ -171,15 +171,15 @@ export const editEmail = async (req, res) => {
         try {
             const usuario = resultado[0]
             if (!usuario) {
-                res.status(422).json({msg: "Houve um erro ao redefinir a senha."})
+                res.status(422).json({msg: "Usuário não encontrado."})
             } else {
                 if (token != usuario.token) {
                     res.status(422).send({msg: "Código de verificação incorreto!"})
                 } else {
                     if (usuario.expiracao_token > agora) {
-                        db.query("UPDATE usuario SET `email` = ? WHERE `email` = ?, `token` = NULL, `expiracao_token` = NULL", [novoEmail, email], async (erro) => {
-                                if (erro)
-                                    return res.status(500).json({msg: "Erro ao atualizar usuário."})
+                        db.query("UPDATE usuario SET `email` = ?, `token` = NULL, `expiracao_token` = NULL WHERE `email` = ?", [novoEmail, email], async (erro) => {
+                            if (erro)
+                                    return res.status(500).json(erro)
                                 else
                                     return res.status(200).json({msg: "Email atualizado."})
                             },
