@@ -12,28 +12,28 @@ export const addUsuario = async (req, res) => {
 
     db.query(insert, [nome_usuario, email, senha, telefone],(erro, resultado) => {
             if (erro)
-                return res.status(402).json(erro)
+                return res.status(400).json({msg: "Erro ao cadastrar usuário."})
             else
-                return res.status(201).json({msg: "Usuário criado com sucesso."})
+                return res.status(201).json({msg: "Usuário cadastrado com sucesso."})
         },
     )
 }
 
 export const login = async (req, res) => {
     const { email, senha } = req.body
-    const select = "SELECT * FROM usuario WHERE usuario.email=?"
+    const select = "SELECT * FROM usuario WHERE `email`=?"
     db.query(select, [email], async (erro, usuario) => {
         if (!usuario[0]) {
-            return res.status(422).json({ msg: "Usuário não encontrado!" })
+            return res.status(400).json({ msg: "Senha incorreta ou email não cadastrado." })
         } else {
             const checkSenha = bcrypt.compareSync(senha, usuario[0].senha)
             if (!checkSenha) {
-                return res.status(422).json({ msg: "Senha incorreta!" })
+                return res.status(400).json({ msg: "Senha incorreta ou email não cadastrado." })
             } else {
                 try {
                     const secret = process.env.SECRET
                     const token = jwt.sign({id: usuario[0].id,},secret)
-                    res.status(200).json({msg: "Autenticação realizada com sucesso", token})
+                    res.status(200).json({msg: "Autenticação realizada com sucesso", token: token})
                 } catch (erro) {
                     console.log(erro)
                 }
@@ -54,7 +54,7 @@ export const recuperacao = async (req, res) => {
     db.query(consulta, [email], async (erro, usuario) => {
         try {
             if (!usuario[0]) {
-                return res.status(422).json({ msg: "Usuário não encontrado!"})
+                return res.status(400).json({ msg: "Usuário não encontrado!"})
             } else {
                 mailer.sendMail(
                     {
@@ -66,14 +66,14 @@ export const recuperacao = async (req, res) => {
                             token +
                             "</h2>",
                     }
-                )
+                ),
+                db.query(atualizacao, [token, expiracao, email], async () => {
+                    return res.status(200).json({ msg: "Email de recuperação enviado." })
+                })
             }
         } catch (err) {
             res.status(500).json({msg: "Houve um erro na recuperação de senha."})
         }
-    }),
-    db.query(atualizacao, [token, expiracao, email], async () => {
-        return res.status(200).json({ msg: "Email de recuperação enviado." })
     })
 }
 
@@ -84,7 +84,7 @@ export const resetSenha = async (req, res) => {
     const senha = bcrypt.hashSync(req.body.senha, salt)
     /* CORRIGIR ERRO*/
     db.query("SELECT * FROM usuario WHERE `email`=?", [email, token], async (erro, resultado) => {
-        try {
+   
             const usuario = resultado[0]
             if (!usuario) {
                 res.status(422).json({msg: "Houve um erro ao redefinir a senha."})
@@ -105,11 +105,7 @@ export const resetSenha = async (req, res) => {
                     }
                 }
             }
-        } catch (erro) {
-            res.status(500).json({
-                msg: "Houve um erro ao redefinir a senha.",
-            })
-        }
+      
     })
 }
 
