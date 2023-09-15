@@ -34,13 +34,31 @@ export const login = async (req, res) => {
                     return res.status(400).json({ msg: "Senha incorreta ou e-mail não cadastrado." })
                 } else {
                     const secret = process.env.SECRET
-                    const token = jwt.sign({id: usuario[0].id,},secret)
+                    const id_user = {id: usuario[0].id_usuario}
+                    const token = jwt.sign( id_user, secret, {noTimestamp:true, expiresIn: 7000})
                     res.status(200).json({msg: "Autenticação realizada com sucesso", token: token})
                 }
             }
         }
         
     })
+}
+
+export const getId = async (req, res) => {
+    const authHeader = req.headers["authorization"]
+    const token = authHeader && authHeader.split(' ')[1]
+
+    if (!token){
+        return res.status(401).json({msg: "Acesso negado."})
+    }
+
+    try {
+        const secret = process.env.SECRET
+        const decoded = jwt.verify(token, secret)
+        return res.status(200).json({id: decoded.id})
+    }catch(erro){
+        res.status(400).json({msg: "Token inválido."})
+    }
 }
 
 export const recuperacao = async (req, res) => {
@@ -54,7 +72,7 @@ export const recuperacao = async (req, res) => {
 
     db.query(consulta, [email], async (erro, usuario) => {
         if(erro){
-            return res.status(200).json({ msg: "Erro ao enviar e-mail de recuperação." })
+            return res.status(500).json({ msg: "Erro ao enviar e-mail de recuperação." })
         }else{
             if (!usuario[0]) {
                 return res.status(400).json({ msg: "Usuário não encontrado!"})
@@ -90,7 +108,7 @@ export const resetSenha = async (req, res) => {
 
     db.query(consulta, [email, token], async (erro, usuario) => {
         if(erro){
-            res.status(400).json({msg: "Houve um erro ao redefinir senha."})
+            res.status(500).json({msg: "Houve um erro ao redefinir senha."})
         }else{
             if (!usuario[0]) {
                 res.status(400).json({msg: "Houve um erro ao redefinir senha."})
@@ -122,7 +140,7 @@ export const editUsuario = async (req, res) => {
 
     db.query(update, [nome_usuario,  telefone, email], (erro) => {
         if (erro)
-            return res.json({msg: "Erro ao atualizar usuário"});
+            return res.status(500).json({msg: "Erro ao atualizar usuário"});
         else
             return res.status(200).json({msg: "Usuário atualizado com sucesso."});
     });
