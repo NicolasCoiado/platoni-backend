@@ -211,3 +211,26 @@ export const editEmail = async (req, res) => {
         }
     })
 }
+
+export const getInfos = async (req, res) => {
+    const { id } = req.body
+
+    db.query("SELECT `nome_usuario`, `email`, `telefone` FROM usuario WHERE `id_usuario`=?", [id], async (erro, resultado) => {
+        if (erro){
+            return res.status(500).json({msg: "Erro ao consultar informações."})
+        }else{
+            return res.status(200).json(resultado[0])
+        }
+    })
+}
+
+export const excluirUsuario = async (req, res) => {
+    db.query("SELECT `email`, `senha` FROM usuario WHERE `id_usuario`=?", [id], async (erro, resultado) => {
+        const { id } = req.body
+        if(erro){
+            res.status(500).json({msg: "Erro ao excluir usuário"})
+        }else{
+            
+        }
+    })
+}
