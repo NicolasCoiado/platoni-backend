@@ -5,12 +5,12 @@ import crypto from "crypto"
 import mailer from "../configs/mailer.js"
 
 export const addUsuario = async (req, res) => {
-    const insert = "INSERT INTO usuario (nome_usuario, email, senha, telefone) VALUES (?,?,?,?)"
+    const insert = "INSERT INTO usuario (nome_usuario, email, senha) VALUES (?,?,?)"
     const salt = await bcrypt.genSalt(12)
-    const { nome_usuario, email, telefone } = req.body
+    const { nome_usuario, email} = req.body
     const senha = bcrypt.hashSync(req.body.senha, salt)
 
-    db.query(insert, [nome_usuario, email, senha, telefone],(erro, resultado) => {
+    db.query(insert, [nome_usuario, email, senha],(erro, resultado) => {
             if (erro)
                 return res.status(400).json({msg: "Erro ao cadastrar usuário."})
             else
@@ -21,20 +21,20 @@ export const addUsuario = async (req, res) => {
 
 export const login = async (req, res) => {
     const { email, senha } = req.body
-    const select = "SELECT * FROM usuario WHERE `email`=?"
-    db.query(select, [email], async (erro, usuario) => {
+    const select = "SELECT id_usuario, senha FROM usuario WHERE `email`=?"
+    db.query(select, [email], async (erro, resultado) => {
         if(erro){
             res.status(500).json({msg: "Erro ao realizar a autenticação."})
         }else{
-            if (!usuario[0]) {
+            if (!resultado[0]) {
                 return res.status(400).json({ msg: "Senha incorreta ou e-mail não cadastrado." })
             } else {
-                const checkSenha = bcrypt.compareSync(senha, usuario[0].senha)
+                const checkSenha = bcrypt.compareSync(senha, resultado[0].senha)
                 if (!checkSenha) {
                     return res.status(400).json({ msg: "Senha incorreta ou e-mail não cadastrado." })
                 } else {
                     const secret = process.env.SECRET
-                    const id_user = {id: usuario[0].id_usuario}
+                    const id_user = {id: resultado[0].id_usuario}
                     const token = jwt.sign( id_user, secret, {noTimestamp:true, expiresIn: 7000})
                     res.status(200).json({msg: "Autenticação realizada com sucesso", token: token})
                 }
@@ -80,7 +80,7 @@ export const recuperacao = async (req, res) => {
                 mailer.sendMail(
                     {
                         to: email,
-                        from: "seucert@gmail.com",
+                        from: "platoni.certificados@gmail.com",
                         subject: "Recuperação de senha: SeuCERT!",
                         html:
                             "<h1>Esqueceu sua senha?</h1><p>Aparentemente você deseja trocar sua senha no SeuCERT.</p> <p>Caso você de fato queira redefinir sua senha, utilize o seguinte código:</p> <h2>" +
@@ -134,13 +134,13 @@ export const resetSenha = async (req, res) => {
 }
 
 export const editUsuario = async (req, res) => {
-    const update ="UPDATE usuario SET `nome_usuario` = ?, `telefone` = ? WHERE `email` = ?";
+    const update ="UPDATE usuario SET `nome_usuario` = ? WHERE `email` = ?";
 
-    const { nome_usuario,  telefone, email } = req.body
+    const { nome_usuario, email } = req.body
 
-    db.query(update, [nome_usuario,  telefone, email], (erro) => {
+    db.query(update, [nome_usuario, email], (erro) => {
         if (erro)
-            return res.status(500).json({msg: "Erro ao atualizar usuário"});
+            return res.status(500).json({msg: "Erro ao atualizar usuário", erro});
         else
             return res.status(200).json({msg: "Usuário atualizado com sucesso."});
     });
@@ -165,7 +165,7 @@ export const codigo_email = async (req, res) => {
                 mailer.sendMail(
                     {
                         to: novoEmail,
-                        from: "seucert@gmail.com",
+                        from: "platoni.certificados@gmail.com",
                         subject: "Recuperação de senha: SeuCERT!",
                         html:
                             "<h1>Deseja alterar seu e-mail?</h1><p>Aparentemente você deseja trocar seu e-mail no SeuCERT.</p> <p>Caso você de fato queira fazer isso, utilize o seguinte código:</p> <h2>" +
@@ -214,7 +214,7 @@ export const editEmail = async (req, res) => {
 
 export const getInfos = async (req, res) => {
     const { id } = req.body
-    const consulta = "SELECT `nome_usuario`, `email`, `telefone` FROM usuario WHERE `id_usuario`=?"
+    const consulta = "SELECT `nome_usuario`, `email`, FROM usuario WHERE `id_usuario`=?"
 
     db.query(consulta, [id], async (erro, resultado) => {
         if (erro)
@@ -241,7 +241,7 @@ export const codigoExclusao = async (req, res) => {
                 mailer.sendMail(
                     {
                         to: email,
-                        from: "seucert@gmail.com",
+                        from: "platoni.certificados@gmail.com",
                         subject: "Exclusão de conta: SeuCERT!",
                         html:
                             "<h1>Deseja excluir sua conta?</h1><p>Aparentemente você deseja excluir sua conta no SeuCERT.</p> <p>Caso você de fato queira fazer isso, utilize o seguinte código:</p> <h2>" +
