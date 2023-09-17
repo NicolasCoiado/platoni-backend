@@ -10,7 +10,9 @@ import {
     codigo_email,
     editEmail,
     getId,
-    getInfos
+    getInfos,
+    codigoExclusao,
+    exclusaoUsuario
 } from "../modelos/usuario.js"
 
 const routes = express.Router()
@@ -24,6 +26,8 @@ routes.put("/codigo_email", verificaToken, codigo_email)
 routes.put("/edit_email", verificaToken, editEmail)
 routes.get("/get_id", verificaToken, getId)
 routes.get("/get_infos", verificaToken, getInfos)
+routes.delete("/codigo_exclusao", verificaToken, codigoExclusao)
+routes.delete("/exclusao_usuario", verificaToken, exclusaoUsuario)
 
 
 export default routes

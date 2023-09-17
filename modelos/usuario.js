@@ -214,23 +214,74 @@ export const editEmail = async (req, res) => {
 
 export const getInfos = async (req, res) => {
     const { id } = req.body
+    const consulta = "SELECT `nome_usuario`, `email`, `telefone` FROM usuario WHERE `id_usuario`=?"
 
-    db.query("SELECT `nome_usuario`, `email`, `telefone` FROM usuario WHERE `id_usuario`=?", [id], async (erro, resultado) => {
-        if (erro){
+    db.query(consulta, [id], async (erro, resultado) => {
+        if (erro)
             return res.status(500).json({msg: "Erro ao consultar informações."})
-        }else{
+        else
             return res.status(200).json(resultado[0])
+    })
+}
+
+export const codigoExclusao = async (req, res) => {
+    const {id, email}  = req.body
+    const token = crypto.randomBytes(5).toString("hex")
+    const expiracao = new Date()
+    expiracao.setHours(expiracao.getHours() + 1)
+
+    const consulta = "SELECT `email` FROM usuario WHERE `id_usuario` = ?;"
+    const atualizacao = "UPDATE usuario SET `token`=?, `expiracao_token`=? WHERE `id_usuario`=?"
+
+    db.query(consulta, [id], async (erro, resposta) => {
+        if(erro){
+            return res.status(500).json({ msg: "Erro ao enviar email de confirmação."})
+        }else{
+            if(email == resposta[0].email){
+                mailer.sendMail(
+                    {
+                        to: email,
+                        from: "seucert@gmail.com",
+                        subject: "Exclusão de conta: SeuCERT!",
+                        html:
+                            "<h1>Deseja excluir sua conta?</h1><p>Aparentemente você deseja excluir sua conta no SeuCERT.</p> <p>Caso você de fato queira fazer isso, utilize o seguinte código:</p> <h2>" +
+                            token +
+                            "</h2>",
+                    }
+                ),
+                db.query(atualizacao, [token, expiracao, email], async () => {
+                    return res.status(200).json({ msg: "Email de edição enviado." })
+                })
+            }else{
+                return res.status(400).json({ msg: "Email incorreto."})
+            }
         }
     })
 }
 
-export const excluirUsuario = async (req, res) => {
-    db.query("SELECT `email`, `senha` FROM usuario WHERE `id_usuario`=?", [id], async (erro, resultado) => {
-        const { id } = req.body
+export const exclusaoUsuario = async (req, res) =>{
+    const {id, token}  = req.body
+    const consulta = "SELECT COUNT(*) AS qtdUsuarios FROM usuario WHERE `id_usuario` = ?;"
+    const exclusao = "DELETE FROM usuario WHERE `id_usuario`=?;"
+    
+    db.query(consulta, [id, token], async (erro, resultado) => {
         if(erro){
-            res.status(500).json({msg: "Erro ao excluir usuário"})
+            res.status(500).json({msg: "Erro ao consultar usuário."})
         }else{
+            const qtdUsuarios = resultado[0].qtdUsuarios;
             
+            if(qtdUsuarios==0){
+                return res.status(400).json({ msg: "Erro ao encontrar email."})
+            }else if (qtdUsuarios==1){
+                db.query(exclusao, [id], async (erro, resultado) => {
+                    if (erro)
+                        res.status(400).json({msg: "Erro ao exluir conta."})
+                    else
+                        return res.status(200).json({ msg: "Usuário excluído." })
+                })
+            }else{
+                return res.status(400).json({ msg: "Erro ao exluir conta."})
+            }
         }
     })
 }
