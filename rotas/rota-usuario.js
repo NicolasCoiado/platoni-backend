@@ -15,19 +15,18 @@ import {
     exclusaoUsuario
 } from "../modelos/usuario.js"
 
-const routes = express.Router()
+const routesUser = express.Router()
 
-routes.post("/cadastro", addUsuario)
-routes.post("/", login)
-routes.put("/recuperacao", recuperacao)
-routes.put("/reset_senha", resetSenha)
-routes.put("/edit_usuario", verificaToken, editUsuario)
-routes.put("/codigo_email", verificaToken, codigo_email)
-routes.put("/edit_email", verificaToken, editEmail)
-routes.get("/get_id", verificaToken, getId)
-routes.get("/get_infos", verificaToken, getInfos)
-routes.delete("/codigo_exclusao", verificaToken, codigoExclusao)
-routes.delete("/exclusao_usuario", verificaToken, exclusaoUsuario)
+routesUser.post("/cadastro", addUsuario)
+routesUser.post("/", login)
+routesUser.put("/recuperacao", recuperacao)
+routesUser.put("/reset_senha", resetSenha)
+routesUser.put("/edit_usuario", verificaToken, editUsuario)
+routesUser.put("/codigo_email", verificaToken, codigo_email)
+routesUser.put("/edit_email", verificaToken, editEmail)
+routesUser.get("/get_id", verificaToken, getId)
+routesUser.get("/get_infos", verificaToken, getInfos)
+routesUser.delete("/codigo_exclusao", verificaToken, codigoExclusao)
+routesUser.delete("/exclusao_usuario", verificaToken, exclusaoUsuario)
 
-
-export default routes
+export default routesUser

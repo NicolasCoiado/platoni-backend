@@ -12,7 +12,7 @@ export const addUsuario = async (req, res) => {
 
     db.query(insert, [nome_usuario, email, senha],(erro, resultado) => {
             if (erro)
-                return res.status(400).json({msg: "Erro ao cadastrar usuário."})
+                return res.status(400).json({msg: "Erro ao cadastrar usuário.", erro})
             else
                 return res.status(201).json({msg: "Usuário cadastrado com sucesso."})
         },
