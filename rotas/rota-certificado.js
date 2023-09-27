@@ -1,5 +1,6 @@
 import express from "express"
 import verificaToken from "../configs/verifica-token.js"
+import upload from '../configs/cfgMulter.mjs';
 
 import {
     addCertificado
@@ -7,6 +8,7 @@ import {
 
 const routesCert = express.Router()
 
-routesCert.post("/cadastro_cert", verificaToken, addCertificado)
+routesCert.post("/cadastro_cert", upload.single('imagem'), addCertificado)
+
 
 export default routesCert

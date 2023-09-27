@@ -218,7 +218,7 @@ export const getInfos = async (req, res) => {
 
     db.query(consulta, [id], async (erro, resultado) => {
         if (erro)
-            return res.status(500).json({msg: "Erro ao consultar informações."})
+            return res.status(500).json({msg: "Erro ao consultar informações.", erro})
         else
             return res.status(200).json(resultado[0])
     })
