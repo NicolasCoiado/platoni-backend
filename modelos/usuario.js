@@ -5,7 +5,7 @@ import crypto from "crypto"
 import mailer from "../configs/mailer.js"
 
 export const addUsuario = async (req, res) => {
-    const insert = "INSERT INTO usuario (nome_usuario, email, senha) VALUES (?,?,?)"
+    const insert = "INSERT INTO usuarios (nome_usuario, email, senha) VALUES (?,?,?)"
     const salt = await bcrypt.genSalt(12)
     const { nome_usuario, email} = req.body
     const senha = bcrypt.hashSync(req.body.senha, salt)
@@ -15,13 +15,12 @@ export const addUsuario = async (req, res) => {
                 return res.status(400).json({msg: "Erro ao cadastrar usuário.", erro})
             else
                 return res.status(201).json({msg: "Usuário cadastrado com sucesso."})
-        },
-    )
+    })
 }
 
 export const login = async (req, res) => {
     const { email, senha } = req.body
-    const select = "SELECT id_usuario, senha FROM usuario WHERE `email`=?"
+    const select = "SELECT id_usuario, senha FROM usuarios WHERE `email`=?"
     db.query(select, [email], async (erro, resultado) => {
         if(erro){
             res.status(500).json({msg: "Erro ao realizar a autenticação."})
@@ -66,9 +65,8 @@ export const recuperacao = async (req, res) => {
     const token = crypto.randomBytes(5).toString("hex")
     const expiracao = new Date()
     expiracao.setHours(expiracao.getHours() + 1)
-
-    const consulta = "SELECT * FROM usuario WHERE `email`=?"
-    const atualizacao = "UPDATE usuario SET `token`=?, `expiracao_token`=? WHERE `email`=?"
+    const consulta = "SELECT * FROM usuarios WHERE `email`=?"
+    const atualizacao = "UPDATE usuarios SET `token`=?, `expiracao_token`=? WHERE `email`=?"
 
     db.query(consulta, [email], async (erro, usuario) => {
         if(erro){
@@ -103,8 +101,8 @@ export const resetSenha = async (req, res) => {
     const salt = await bcrypt.genSalt(12)
     const senha = bcrypt.hashSync(req.body.senha, salt)
 
-    const consulta = "SELECT * FROM usuario WHERE `email`=?"
-    const atualizacao = "UPDATE usuario SET `senha` = ?, `token` = NULL, `expiracao_token` = NULL WHERE `email`=?"
+    const consulta = "SELECT * FROM usuarios WHERE `email`=?"
+    const atualizacao = "UPDATE usuarios SET `senha` = ?, `token` = NULL, `expiracao_token` = NULL WHERE `email`=?"
 
     db.query(consulta, [email, token], async (erro, usuario) => {
         if(erro){
@@ -134,7 +132,7 @@ export const resetSenha = async (req, res) => {
 }
 
 export const editUsuario = async (req, res) => {
-    const update ="UPDATE usuario SET `nome_usuario` = ? WHERE `email` = ?";
+    const update ="UPDATE usuarios SET `nome_usuario` = ? WHERE `email` = ?";
 
     const { nome_usuario, email } = req.body
 
@@ -152,8 +150,8 @@ export const codigo_email = async (req, res) => {
     const expiracao = new Date()
     expiracao.setHours(expiracao.getHours() + 1)
 
-    const consulta = "SELECT * FROM usuario WHERE `email`=?"
-    const atualizacao = "UPDATE usuario SET `token`=?, `expiracao_token`=? WHERE `email`=?"
+    const consulta = "SELECT * FROM usuarios WHERE `email`=?"
+    const atualizacao = "UPDATE usuarios SET `token`=?, `expiracao_token`=? WHERE `email`=?"
 
     db.query(consulta, [email], async (erro, usuario) => {
         if(erro){
@@ -185,7 +183,7 @@ export const editEmail = async (req, res) => {
     const { novoEmail, email, token } = req.body
     const agora = new Date()
 
-    db.query("SELECT * FROM usuario WHERE `email`=?", [email, token], async (erro, usuario) => {
+    db.query("SELECT * FROM usuarios WHERE `email`=?", [email, token], async (erro, usuario) => {
         if(erro){
             res.status(500).json({msg: "Erro ao consultar usuário."})
         }else{
@@ -196,7 +194,7 @@ export const editEmail = async (req, res) => {
                     res.status(422).send({msg: "Código de verificação incorreto!"})
                 } else {
                     if (usuario[0].expiracao_token > agora) {
-                        db.query("UPDATE usuario SET `email` = ?, `token` = NULL, `expiracao_token` = NULL WHERE `email` = ?", [novoEmail, email], async (erro) => {
+                        db.query("UPDATE usuarios SET `email` = ?, `token` = NULL, `expiracao_token` = NULL WHERE `email` = ?", [novoEmail, email], async (erro) => {
                             if (erro)
                                     return res.status(500).json(erro)
                                 else
@@ -214,7 +212,7 @@ export const editEmail = async (req, res) => {
 
 export const getInfos = async (req, res) => {
     const { id } = req.body
-    const consulta = "SELECT `nome_usuario`, `email`, FROM usuario WHERE `id_usuario`=?"
+    const consulta = "SELECT `nome_usuario`, `email` FROM usuarios WHERE `id_usuario`=?"
 
     db.query(consulta, [id], async (erro, resultado) => {
         if (erro)
@@ -230,12 +228,12 @@ export const codigoExclusao = async (req, res) => {
     const expiracao = new Date()
     expiracao.setHours(expiracao.getHours() + 1)
 
-    const consulta = "SELECT `email` FROM usuario WHERE `id_usuario` = ?;"
-    const atualizacao = "UPDATE usuario SET `token`=?, `expiracao_token`=? WHERE `id_usuario`=?"
+    const consulta = "SELECT `email` FROM usuarios WHERE `id_usuario` = ?;"
+    const atualizacao = "UPDATE usuarios SET `token`=?, `expiracao_token`=? WHERE `id_usuario`=?"
 
     db.query(consulta, [id], async (erro, resposta) => {
         if(erro){
-            return res.status(500).json({ msg: "Erro ao enviar email de confirmação."})
+            return res.status(500).json({ msg: "Erro ao enviar email de confirmação.", erro})
         }else{
             if(email == resposta[0].email){
                 mailer.sendMail(
@@ -261,8 +259,8 @@ export const codigoExclusao = async (req, res) => {
 
 export const exclusaoUsuario = async (req, res) =>{
     const {id, token}  = req.body
-    const consulta = "SELECT COUNT(*) AS qtdUsuarios FROM usuario WHERE `id_usuario` = ?;"
-    const exclusao = "DELETE FROM usuario WHERE `id_usuario`=?;"
+    const consulta = "SELECT COUNT(*) AS qtdUsuarios FROM usuarios WHERE `id_usuario` = ?;"
+    const exclusao = "DELETE FROM usuarios WHERE `id_usuario`=?;"
     
     db.query(consulta, [id, token], async (erro, resultado) => {
         if(erro){
