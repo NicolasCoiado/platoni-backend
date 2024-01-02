@@ -16,10 +16,10 @@ const verificaAdm = (req, res, next) => {
         const decoded = jwt.verify(token, secret)
         const id = decoded.id
 
-        const select = "SELECT `tipo_usuario` FROM usuario WHERE `id_usuario`=?"
+        const select = "SELECT `tipo_usuario` FROM usuarios WHERE `id_usuario`=?"
         
         db.query(select, id, async (erro, resultado) => {
-            const tipoUsuario = resultado[0].tipo_usuario;
+            const tipoUsuario = resultado[0].tipo_usuario
             if(erro){
                 res.status(500).json({msg: "Erro ao realizar a autenticação."})
             } else {

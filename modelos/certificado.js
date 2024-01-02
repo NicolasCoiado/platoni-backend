@@ -1,5 +1,6 @@
 import db from "../configs/db.js"
 import cloudinary from "../configs/cloudinary.js"
+import fs from "fs"
 
 export const addCertificado = async (req, res) => {
   const { nome_certificado, emissor, descricao, id_usuario } = req.body
@@ -8,7 +9,6 @@ export const addCertificado = async (req, res) => {
   if (!req.file || !id_usuario) {
     return res.status(400).json({ msg: "O campo de imagem é obrigatório." })
   } 
-
   try {
     let urlImg
     let id_url
@@ -19,10 +19,15 @@ export const addCertificado = async (req, res) => {
         urlImg = result.secure_url
         id_url = result.public_id
         db.query(insert, [nome_certificado, emissor, descricao, urlImg, id_usuario, id_url],(erro) => {
-          if (erro)
+          if (erro){
+            fs.unlink(req.file.path, function (err){
               return res.status(400).json({msg: "Erro ao cadastrar certificado.", erro})
-          else   
+            })
+          }else{
+            fs.unlink(req.file.path, function (err){
               return res.status(201).json({msg: "Certificado cadastrado com sucesso."})
+            })
+          }
         })
       }
     })
@@ -82,10 +87,15 @@ export const editCertificado = async (req, res) => {
                   urlImg = result.secure_url
                   id_url = result.public_id
                   db.query(update, [nome_certificado, emissor, descricao, urlImg, id_url, id_certificado],(erro) => {
-                    if (erro)
+                    if (erro){
+                      fs.unlink(req.file.path, function (err){
                         return res.status(400).json({msg: "Erro ao atualizar certificado.", erro})
-                    else   
-                        return res.status(201).json({msg: "Certificado atualizado com sucesso."})
+                      })
+                    }else{
+                      fs.unlink(req.file.path, function (err){
+                        return res.status(201).json({msg: "Certificado atualizar com sucesso."})
+                      })
+                    }
                   })
                 }
               })
