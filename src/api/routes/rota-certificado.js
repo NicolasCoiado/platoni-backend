@@ -1,6 +1,6 @@
 import express from "express"
-import verificaToken from "../configs/verifica-token.js"
-import upload from '../configs/cfgMulter.mjs';
+import verificaToken from "../services/verifica-token.js"
+import upload from '../services/cfgMulter.mjs';
 
 import {
     addCertificado,
@@ -8,7 +8,7 @@ import {
     listarCertificados,
     getInfoCert,
     excluirCertificado
-} from "../modelos/certificado.js"
+} from "../controllers/certificado.js"
 
 const routesCert = express.Router()
 

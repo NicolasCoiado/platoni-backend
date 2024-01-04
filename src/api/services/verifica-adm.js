@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import db from "../configs/db.js"
+import db from "../services/db.js"
 import "dotenv/config"
 
 const verificaAdm = (req, res, next) => {

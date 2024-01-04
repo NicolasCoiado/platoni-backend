@@ -1,7 +1,7 @@
 import express from "express"
-import routesUser from "./rotas/rota-usuario.js"
-import routesAdm from "./rotas/rota-adm.js"
-import routesCert from "./rotas/rota-certificado.js"
+import routesUser from "./api/routes/rota-usuario.js"
+import routesAdm from "./api/routes/rota-adm.js"
+import routesCert from "./api/routes/rota-certificado.js"
 
 import "dotenv/config"
 

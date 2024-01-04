@@ -1,4 +1,4 @@
-import db from "../configs/db.js"
+import db from "../services/db.js"
 
 export const getUsuarios = async (req, res) => {
     const select = "SELECT id_usuario, nome_usuario, email FROM `usuarios`;"

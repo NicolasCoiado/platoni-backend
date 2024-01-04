@@ -1,5 +1,5 @@
 import express from "express"
-import verificaToken from "../configs/verifica-token.js"
+import verificaToken from "../services/verifica-token.js"
 
 import {
     addUsuario,
@@ -13,7 +13,7 @@ import {
     getInfos,
     codigoExclusao,
     exclusaoUsuario
-} from "../modelos/usuario.js"
+} from "../controllers/usuario.js"
 
 const routesUser = express.Router()
 

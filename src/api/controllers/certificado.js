@@ -1,5 +1,5 @@
-import db from "../configs/db.js"
-import cloudinary from "../configs/cloudinary.js"
+import db from "../services/db.js"
+import cloudinary from "../services/cloudinary.js"
 import fs from "fs"
 
 export const addCertificado = async (req, res) => {
@@ -32,7 +32,7 @@ export const addCertificado = async (req, res) => {
       }
     })
   } catch (error) {
-    return res.status(400).json({msg: "Erro ao cadastrar certificado.", erro})
+    return res.status(400).json({msg: "Erro ao cadastrar certificado.", error})
   }
 }
 
@@ -45,7 +45,7 @@ export const listarCertificados = async (req, res) => {
         return res.status(500).json({msg: "Erro ao consultar certificados.", erro})
     else
         return res.status(200).json({msg: "Certificados consultados com sucesso", certificados})
-  });
+  })
 }
 
 export const getInfoCert = async (req, res) => {
