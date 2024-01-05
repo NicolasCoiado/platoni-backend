@@ -21,7 +21,7 @@ export const addUsuario = async (req, res) => {
         return res.status(400).json({msg: "Erro ao cadastrar usuário."})
     }
     
-}//Revisado
+}
 
 export const login = async (req, res) => {
     const { email, senha } = req.body
@@ -49,7 +49,7 @@ export const login = async (req, res) => {
             }
             
         })
-    }//Revisado
+    }
 }
 
 export const getId = async (req, res) => {
@@ -67,7 +67,7 @@ export const getId = async (req, res) => {
     }catch(erro){
         res.status(400).json({msg: "O Token informado é inválido."})
     }
-}//Revisado
+}
 
 export const recuperacao = async (req, res) => {
     const { email } = req.body
@@ -88,9 +88,9 @@ export const recuperacao = async (req, res) => {
                     {
                         to: email,
                         from: "platoni.certificados@gmail.com",
-                        subject: "Recuperação de senha: SeuCERT!",
+                        subject: "Recuperação de senha: Platoni!",
                         html:
-                            "<h1>Esqueceu sua senha?</h1><p>Aparentemente você deseja trocar sua senha no SeuCERT.</p> <p>Caso você de fato queira redefinir sua senha, utilize o seguinte código:</p> <h2>" +
+                            "<h1>Esqueceu sua senha?</h1><p>Aparentemente você deseja trocar sua senha no Platoni.</p> <p>Caso você de fato queira redefinir sua senha, utilize o seguinte código:</p> <h2>" +
                             token +
                             "</h2>",
                     }
@@ -102,7 +102,7 @@ export const recuperacao = async (req, res) => {
         }
         
     })
-}//Revisado
+}
 
 export const resetSenha = async (req, res) => {
     try{
@@ -143,7 +143,7 @@ export const resetSenha = async (req, res) => {
     }catch(error){
         res.status(500).json({msg: "Houve um erro ao redefinir senha."})
     }
-}//Revisado
+}
 
 export const editUsuario = async (req, res) => {
     const update ="UPDATE usuarios SET nome_usuario = ? WHERE email = ?"
@@ -160,7 +160,7 @@ export const editUsuario = async (req, res) => {
                 return res.status(200).json({msg: "Usuário atualizado com sucesso."})
         })
     }
-}//Revisado
+}
 
 export const codigo_email = async (req, res) => {
     const { email, novoEmail } = req.body
@@ -185,9 +185,9 @@ export const codigo_email = async (req, res) => {
                         {
                             to: novoEmail,
                             from: "platoni.certificados@gmail.com",
-                            subject: "Recuperação de senha: SeuCERT!",
+                            subject: "Recuperação de senha: Platoni!",
                             html:
-                                "<h1>Deseja alterar seu e-mail?</h1><p>Aparentemente você deseja trocar seu e-mail no SeuCERT.</p> <p>Caso você de fato queira fazer isso, utilize o seguinte código:</p> <h2>" +
+                                "<h1>Deseja alterar seu e-mail?</h1><p>Aparentemente você deseja trocar seu e-mail no Platoni.</p> <p>Caso você de fato queira fazer isso, utilize o seguinte código:</p> <h2>" +
                                 token +
                                 "</h2>",
                         }
@@ -199,7 +199,7 @@ export const codigo_email = async (req, res) => {
             }
         }) 
     }     
-}//Revisado
+}
 
 export const editEmail = async (req, res) => {
     const { novoEmail, email, token } = req.body
@@ -234,7 +234,7 @@ export const editEmail = async (req, res) => {
             }
         })
     }
-}//Revisado
+}
 
 export const getInfos = async (req, res) => {
     const { id } = req.body
@@ -250,7 +250,7 @@ export const getInfos = async (req, res) => {
                 return res.status(200).json(resultado[0])
         })
     }
-}//Revisado
+}
 
 export const codigoExclusao = async (req, res) => {
     const {id, email}  = req.body
@@ -265,17 +265,19 @@ export const codigoExclusao = async (req, res) => {
         const atualizacao = "UPDATE usuarios SET token=?, expiracao_token=? WHERE id_usuario=?"
 
         db.query(consulta, [id], async (erro, resposta) => {
-            if(erro){
-                return res.status(500).json({ msg: "Erro ao enviar email de confirmação.", erro})
+            if(resposta[0] == undefined){
+                return res.status(422).json({ msg: "Usuário não cadastrado."})
+            }else if (erro){
+                return res.status(500).json({ msg: "Erro ao enviar email de confirmação."})
             }else{
                 if(email == resposta[0].email){
                     mailer.sendMail(
                         {
                             to: email,
                             from: "platoni.certificados@gmail.com",
-                            subject: "Exclusão de conta: SeuCERT!",
+                            subject: "Exclusão de conta: Platoni!",
                             html:
-                                "<h1>Deseja excluir sua conta?</h1><p>Aparentemente você deseja excluir sua conta no SeuCERT.</p> <p>Caso você de fato queira fazer isso, utilize o seguinte código:</p> <h2>" +
+                                "<h1>Deseja excluir sua conta?</h1><p>Aparentemente você deseja excluir sua conta no Platoni.</p> <p>Caso você de fato queira fazer isso, utilize o seguinte código:</p> <h2>" +
                                 token +
                                 "</h2>",
                         }
@@ -286,34 +288,37 @@ export const codigoExclusao = async (req, res) => {
                 }else{
                     return res.status(422).json({ msg: "Email incorreto."})
                 }
-            }
+            }   
         })
     }
 }
 
 export const exclusaoUsuario = async (req, res) =>{
     const {id, token}  = req.body
-    const consulta = "SELECT COUNT(*) AS qtdUsuarios FROM usuarios WHERE `id_usuario` = ?;"
-    const exclusao = "DELETE FROM usuarios WHERE `id_usuario`=?;"
+    const consulta = "SELECT COUNT(*) AS qtdUsuarios FROM usuarios WHERE id_usuario = ?;"
+    const exclusao = "DELETE FROM usuarios WHERE id_usuario=?;"
     
-    db.query(consulta, [id, token], async (erro, resultado) => {
-        if(erro){
-            res.status(500).json({msg: "Erro ao consultar usuário."})
-        }else{
-            const qtdUsuarios = resultado[0].qtdUsuarios;
-            
-            if(qtdUsuarios==0){
-                return res.status(400).json({ msg: "Erro ao encontrar email."})
-            }else if (qtdUsuarios==1){
-                db.query(exclusao, [id], async (erro, resultado) => {
-                    if (erro)
-                        res.status(400).json({msg: "Erro ao exluir conta."})
-                    else
-                        return res.status(200).json({ msg: "Usuário excluído." })
-                })
+    if(!id || !token){
+        return res.status(422).json({ msg: "Todos os campos são obrigatórios."})
+    }else{
+        db.query(consulta, [id, token], async (erro, resultado) => {
+            if(erro){
+                res.status(500).json({msg: "Erro ao exluir conta."})
             }else{
-                return res.status(400).json({ msg: "Erro ao exluir conta."})
+                const qtdUsuarios = resultado[0].qtdUsuarios;  
+                if(qtdUsuarios==0){
+                    return res.status(422).json({ msg: "Erro ao consultar usuário."})
+                }else if (qtdUsuarios==1){
+                    db.query(exclusao, [id], async (erro, resultado) => {
+                        if (erro)
+                            res.status(400).json({msg: "Erro ao exluir conta."})
+                        else
+                            return res.status(200).json({ msg: "Usuário excluído." })
+                    })
+                }else{
+                    return res.status(400).json({ msg: "Erro ao exluir conta."})
+                }
             }
-        }
-    })
+        })
+    }
 }
