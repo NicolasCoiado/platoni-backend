@@ -1,0 +1,26 @@
+CREATE DATABASE platoni;
+
+CREATE TABLE `usuarios` (
+  `id_usuario` int NOT NULL AUTO_INCREMENT,
+  `nome_usuario` varchar(255) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `senha` varchar(255) NOT NULL,
+  `tipo_usuario` int NOT NULL DEFAULT '0',
+  `token` varchar(10) DEFAULT NULL,
+  `expiracao_token` datetime DEFAULT NULL,
+  `banimento` int DEFAULT (0),
+  PRIMARY KEY (`id_usuario`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `certificados` (
+  `id_certificado` int NOT NULL AUTO_INCREMENT,
+  `nome_certificado` varchar(255) DEFAULT NULL,
+  `emissor` varchar(255) DEFAULT NULL,
+  `descricao` varchar(255) DEFAULT NULL,
+  `url` varchar(255) NOT NULL,
+  `id_usuario` int NOT NULL,
+  `id_url` varchar(255) NOT NULL,
+  PRIMARY KEY (`id_certificado`),
+  KEY `id_usuario` (`id_usuario`),
+  CONSTRAINT `certificados_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
