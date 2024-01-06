@@ -28,26 +28,32 @@ export const login = async (req, res) => {
     if(!email || !senha){
         return res.status(400).json({ msg: "Todos os campos devem ser preenchidos." })
     }else{
-        const select = "SELECT id_usuario, senha FROM usuarios WHERE email=?"
+        const select = "SELECT id_usuario, senha, banimento FROM usuarios WHERE email=?"
         db.query(select, [email], async (erro, resultado) => {
+            const idBanco = resultado[0].id_usuario
+            const senhaBanco = resultado[0].senha
+            const banimentoBanco = resultado[0].banimento
             if(erro){
                 res.status(500).json({msg: "Erro ao realizar a autenticação."})
             }else{
                 if (!resultado[0]) {
                     return res.status(400).json({ msg: "Senha incorreta ou e-mail não cadastrado." })
                 } else {
-                    const checkSenha = bcrypt.compareSync(senha, resultado[0].senha)
-                    if (!checkSenha) {
-                        return res.status(400).json({ msg: "Senha incorreta ou e-mail não cadastrado." })
-                    } else {
-                        const secret = process.env.SECRET
-                        const id_user = {id: resultado[0].id_usuario}
-                        const token = jwt.sign( id_user, secret, {noTimestamp:true, expiresIn: 7000})
-                        res.status(200).json({msg: "Autenticação realizada com sucesso", token: token})
+                    if(banimentoBanco === 0){
+                        const checkSenha = bcrypt.compareSync(senha, senhaBanco)
+                        if (!checkSenha) {
+                            return res.status(400).json({ msg: "Senha incorreta ou e-mail não cadastrado." })
+                        } else {
+                            const secret = process.env.SECRET
+                            const id_user = {id: idBanco}
+                            const token = jwt.sign( id_user, secret, {noTimestamp:true, expiresIn: 7000})
+                            res.status(200).json({msg: "Autenticação realizada com sucesso", token: token})
+                        }
+                    }else{
+                        return res.status(500).json({ msg: "Usuário banido." })
                     }
                 }
             }
-            
         })
     }
 }
