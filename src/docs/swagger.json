@@ -4,5 +4,947 @@
         "title": "Platoni",
         "description:": "Essa API tem como objetivo hospedar certificados.",
         "version": "1.0.0"
+    },
+    "paths": {
+        "/cadastro": {
+            "post": {
+                "summary": "Cadastro de usuário.",
+                "description": "Rota responsável por cadastrar usuários.",
+                "tags": [
+                    "Usuário"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "nome_usuario": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "senha": {
+                                    "type": "string"
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "nome_usuario": "Fulano da Silva",
+                                        "email": "fulano@platoni.com",
+                                        "senha": "s3nh4S3cr3t4"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário cadastrado com sucesso."
+                    },
+                    "400": {
+                        "description": "Erro ao cadastrar usuário."
+                    }
+                }
+            }
+        },
+        "/": {
+            "post": {
+                "summary": "Login.",
+                "description": "Rota responsável por logar usuários.",
+                "tags": [
+                    "Usuário"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "senha": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "email": "fulano@platoni.com",
+                                        "senha": "s3nh4S3cr3t4"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "{Autenticação realizada com sucesso., eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9}"
+                    },
+                    "400": {
+                        "description": "Senha incorreta ou e-mail não cadastrado."
+                    },
+                    "403": {
+                        "description": "Usuário banido."
+                    },
+                    "500": {
+                        "description": "Erro ao realizar a autenticação."
+                    }
+                }
+            }
+        },
+        "/recuperacao": {
+            "put": {
+                "summary": "Recuperação de Conta.",
+                "description": "Rota responsável por auxiliar usuários em sua recuperação de conta.",
+                "tags": [
+                    "Usuário"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "email": "fulano@platoni.com"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email de edição enviado."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "422": {
+                        "description": "Usuário não encontrado."
+                    },
+                    "500": {
+                        "description": "Erro ao enviar e-mail de edição."
+                    }
+                }
+            }
+        },
+        "/reset_senha": {
+            "put": {
+                "summary": "Alteração de Senha.",
+                "description": "Rota responsável por alterar senhas de usuários.",
+                "tags": [
+                    "Usuário"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "senha": {
+                                        "type": "string"
+                                    },
+                                    "token": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "email": "fulano@platoni.com",
+                                        "senha": "s3nh4S3cr3t4",
+                                        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuário atualizado."
+                    },
+                    "400": {
+                        "description": "Usuário não encontrado ou campo não preenchido."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "422": {
+                        "description": "Código de verificação incorreto."
+                    },
+                    "500": {
+                        "description": "Houve um erro ao redefinir senha."
+                    }
+                }
+            }
+        },
+        "/edit_usuario": {
+            "put": {
+                "summary": "Alteração de nome de usuário.",
+                "description": "Rota responsável por alterar nome de usuários.",
+                "tags": [
+                    "Usuário"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "senha": {
+                                        "type": "string"
+                                    },
+                                    "token": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "nome_usuario": "Fulano da Silva",
+                                        "email": "fulano@platoni.com"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuário atualizado."
+                    },
+                    "400": {
+                        "description": "Todos os campos devem ser preenchidos."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "500": {
+                        "description": "Erro ao atualizar usuário."
+                    }
+                }
+            }
+        },
+        "/codigo_email": {
+            "put": {
+                "summary": "Requisitar alteração de email.",
+                "description": "Rota responsável por auxiliar usuários em sua alteração de email.",
+                "tags": [
+                    "Usuário"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "novoEmail": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "email": "fulano@platoni.com",
+                                        "novoEmail": "e2fulano@platoni.com"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email de edição enviado."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "422": {
+                        "description": "Usuário não encontrado."
+                    },
+                    "500": {
+                        "description": "Erro ao enviar e-mail de edição."
+                    }
+                }
+            }
+        },
+        "/edit_email": {
+            "put": {
+                "summary": "Alteração de email de usuário.",
+                "description": "Rota responsável por alterar email do usuário.",
+                "tags": [
+                    "Usuário"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "novoEmail": {
+                                        "type": "string"
+                                    },
+                                    "token": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "email": "fulano@platoni.com",
+                                        "novoEmail": "e2fulano@platoni.com",
+                                        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email atualizado."
+                    },
+                    "400": {
+                        "description": "Todos os campos são obrigatórios."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "422": {
+                        "description": "Código de verificação incorreto."
+                    },
+                    "500": {
+                        "description": "Erro ao atualizar email."
+                    }
+                }
+            }
+        },
+        "/get_id": {
+            "get": {
+                "summary": "Informar ID.",
+                "description": "Rota responsável por informar ID do usuário.",
+                "tags": [
+                    "Usuário"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "12345"
+                    },
+                    "400": {
+                        "description": "O Token informado é inválido."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    }
+                }
+            }
+        },
+        "/get_infos": {
+            "get": {
+                "summary": "Listar informações do usuário.",
+                "description": "Rota responsável por listar informações do usuário.",
+                "tags": [
+                    "Usuário"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "id": "123"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "{}"
+                    },
+                    "400": {
+                        "description": "O campo id é obrigatório."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "500": {
+                        "description": "Erro ao consultar informações."
+                    }
+                }
+            }
+        },
+        "/codigo_exclusao": {
+            "delete": {
+                "summary": "Solicitar exclusão de usuário.",
+                "description": "Rota responsável por auxiliar usuários na exclusão de sua conta.",
+                "tags": [
+                    "Usuário"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "number"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "id": "123",
+                                        "email": "fulano@platoni.com"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email de edição enviado."
+                    },
+                    "400": {
+                        "description": "Usuário não cadastrado."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "422": {
+                        "description": "Email incorreto."
+                    },
+                    "500": {
+                        "description": "Erro ao enviar email de confirmação."
+                    }
+                }
+            }
+        },
+        "/exclusao_usuario": {
+            "delete": {
+                "summary": "Deletar usuário.",
+                "description": "Rota responsável por excluir conta do usuário.",
+                "tags": [
+                    "Usuário"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "number"
+                                    },
+                                    "token": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "id": "123",
+                                        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuário excluído."
+                    },
+                    "400": {
+                        "description": "Erro ao exluir conta."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "422": {
+                        "description": "Todos os campos são obrigatórios."
+                    },
+                    "500": {
+                        "description": "Erro ao exluir conta."
+                    }
+                }
+            }
+        },
+        "/cadastro_cert": {
+            "post": {
+                "summary": "Cadastro de certificado.",
+                "description": "Rota responsável cadastrar certificados.",
+                "tags": [
+                    "Certificados"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "nome_certificado": {
+                                        "type": "string"
+                                    },
+                                    "emissor": {
+                                        "type": "string"
+                                    },
+                                    "descricao": {
+                                        "type": "string"
+                                    },
+                                    "id_usuario": {
+                                        "type": "number"
+                                    },
+                                    "imagem": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "nome_certificado": "Certificado de Conclusão de Curso",
+                                        "emissor": "Instituição emissora",
+                                        "descricao": "Certificado que consegui ao concluir o curso.",
+                                        "id_usuario": "123",
+                                        "imagem": "imagem.png"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Certificado cadastrado com sucesso."
+                    },
+                    "400": {
+                        "description": "Erro ao cadastrar certificado."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "422": {
+                        "description": "O campo de imagem é obrigatório."
+                    },
+                    "500": {
+                        "description": "Erro ao cadastrar certificado."
+                    }
+                }
+            }
+        },
+        "/edit_cert": {
+            "put": {
+                "summary": "Editar de certificado.",
+                "description": "Rota responsável por editar certificados.",
+                "tags": [
+                    "Certificados"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "nome_certificado": {
+                                        "type": "string"
+                                    },
+                                    "emissor": {
+                                        "type": "string"
+                                    },
+                                    "descricao": {
+                                        "type": "string"
+                                    },
+                                    "id_usuario": {
+                                        "type": "number"
+                                    },
+                                    "imagem": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "nome_certificado": "Certificado de Conclusão de Curso",
+                                        "emissor": "Instituição emissora",
+                                        "descricao": "Certificado que consegui ao concluir o curso.",
+                                        "id_usuario": "123",
+                                        "imagem": "imagem.png"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Certificado atualizar com sucesso."
+                    },
+                    "400": {
+                        "description": "Erro ao consultar certificado."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "500": {
+                        "description": "Erro ao atualizar certificado."
+                    }
+                }
+            }
+        },
+        "/listar_cert": {
+            "get": {
+                "summary": "Listar certificados.",
+                "description": "Rota responsável por listar certificados.",
+                "tags": [
+                    "Certificados"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_usuario": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "id_usuario": "12345"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Certificados consultados com sucesso."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "500": {
+                        "description": "Erro ao consultar certificado."
+                    }
+                }
+            }
+        },
+        "/infos_cert": {
+            "get": {
+                "summary": "Listar informações do certificado.",
+                "description": "Rota responsável por listar certificados.",
+                "tags": [
+                    "Certificados"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_certificado": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "id_certificado": "12345"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Certificados consultados com sucesso."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "500": {
+                        "description": "Erro ao consultar certificado."
+                    }
+                }
+            }
+        },
+        "/delete_cert": {
+            "delete": {
+                "summary": "Excluir certificados.",
+                "description": "Rota responsável por excluir certificados.",
+                "tags": [
+                    "Certificados"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_certificado": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "id_certificado": "12345"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Certificado excluído com sucesso."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "500": {
+                        "description": "Erro ao excluir certificado."
+                    }
+                }
+            }
+        },
+        "/get_usuarios": {
+            "get": {
+                "summary": "Listar usuários.",
+                "description": "Rota responsável por listar usuários.",
+                "tags": [
+                    "Administrador"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{}"
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "500": {
+                        "description": "Erro ao listar usuários."
+                    }
+                }
+            }
+        },
+        "/banir": {
+            "delete": {
+                "summary": "Banir usuário.",
+                "description": "Rota responsável por banir usuários.",
+                "tags": [
+                    "Administrador"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_usuario": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "usuario": {
+                                    "value": {
+                                        "id_usuario": "12345"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuário banido."
+                    },
+                    "401": {
+                        "description": "Acesso negado."
+                    },
+                    "500": {
+                        "description": "Erro ao banir usuário."
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Usuario": {
+                "type": "object",
+                "properties": {
+                    "id_usuario": {
+                        "type": "number"
+                    },
+                    "nome_usuario": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "senha": {
+                        "type": "string"
+                    },
+                    "tipo_usuario": {
+                        "type": "number"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "expedicao_token": {
+                        "type": "string"
+                    },
+                    "banimento": {
+                        "type": "number"
+                    }
+                }
+            },
+            "Certificados": {
+                "type": "object",
+                "properties": {
+                    "id_certificado": {
+                        "type": "number"
+                    },
+                    "nome_certificado": {
+                        "type": "string"
+                    },
+                    "emissor": {
+                        "type": "string"
+                    },
+                    "descricao": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "id_usuario": {
+                        "type": "number"
+                    },
+                    "id_url": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
     }
 }

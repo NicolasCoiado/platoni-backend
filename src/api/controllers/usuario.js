@@ -50,7 +50,7 @@ export const login = async (req, res) => {
                             res.status(200).json({msg: "Autenticação realizada com sucesso", token: token})
                         }
                     }else{
-                        return res.status(500).json({ msg: "Usuário banido." })
+                        return res.status(403).json({ msg: "Usuário banido." })
                     }
                 }
             }
@@ -161,7 +161,7 @@ export const editUsuario = async (req, res) => {
     }else{
         db.query(update, [nome_usuario, email], (erro) => {
             if (erro)
-                return res.status(500).json({msg: "Erro ao atualizar usuário"})
+                return res.status(500).json({msg: "Erro ao atualizar usuário."})
             else
                 return res.status(200).json({msg: "Usuário atualizado com sucesso."})
         })
@@ -182,7 +182,7 @@ export const codigo_email = async (req, res) => {
 
         db.query(consulta, [email], async (erro, usuario) => {
             if(erro){
-                return res.status(200).json({ msg: "Erro ao enviar e-mail de edição." })
+                return res.status(500).json({ msg: "Erro ao enviar e-mail de edição." })
             }else{
                 if (!usuario[0]) {
                     return res.status(422).json({ msg: "Usuário não encontrado."})
@@ -191,7 +191,7 @@ export const codigo_email = async (req, res) => {
                         {
                             to: novoEmail,
                             from: "platoni.certificados@gmail.com",
-                            subject: "Recuperação de senha: Platoni!",
+                            subject: "Edição de email: Platoni!",
                             html:
                                 "<h1>Deseja alterar seu e-mail?</h1><p>Aparentemente você deseja trocar seu e-mail no Platoni.</p> <p>Caso você de fato queira fazer isso, utilize o seguinte código:</p> <h2>" +
                                 token +
@@ -227,7 +227,7 @@ export const editEmail = async (req, res) => {
                         if (usuario[0].expiracao_token > agora) {
                             db.query("UPDATE usuarios SET email = ?, token = NULL, expiracao_token = NULL WHERE email = ?", [novoEmail, email], async (erro) => {
                                 if (erro)
-                                        return res.status(500).json(erro)
+                                        return res.status(500).json("Erro ao atualizar email.")
                                     else
                                         return res.status(200).json({msg: "Email atualizado."})
                                 },
@@ -251,7 +251,7 @@ export const getInfos = async (req, res) => {
 
         db.query(consulta, [id], async (erro, resultado) => {
             if (erro)
-                return res.status(500).json({msg: "Erro ao consultar informações.", erro})
+                return res.status(500).json({msg: "Erro ao consultar informações."})
             else
                 return res.status(200).json(resultado[0])
         })

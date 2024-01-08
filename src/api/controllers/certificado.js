@@ -7,21 +7,21 @@ export const addCertificado = async (req, res) => {
   const insert = "INSERT INTO certificados (nome_certificado, emissor, descricao, url, id_usuario, id_url) VALUES (?,?,?,?,?,?)"
 
   if (!req.file || !id_usuario) {
-    return res.status(400).json({ msg: "O campo de imagem é obrigatório." })
+    return res.status(422).json({ msg: "O campo de imagem é obrigatório." })
   } 
   try {
     let urlImg
     let id_url
     cloudinary.uploader.upload(req.file.path, function (err, result){
       if(err){
-        return res.status(500).json({msg: "Erro ao cadastrar certificado.", err})
+        return res.status(500).json({msg: "Erro ao cadastrar certificado."})
       }else{
         urlImg = result.secure_url
         id_url = result.public_id
         db.query(insert, [nome_certificado, emissor, descricao, urlImg, id_usuario, id_url],(erro) => {
           if (erro){
             fs.unlink(req.file.path, function (err){
-              return res.status(400).json({msg: "Erro ao cadastrar certificado.", erro})
+              return res.status(400).json({msg: "Erro ao cadastrar certificado."})
             })
           }else{
             fs.unlink(req.file.path, function (err){
@@ -32,7 +32,7 @@ export const addCertificado = async (req, res) => {
       }
     })
   } catch (error) {
-    return res.status(400).json({msg: "Erro ao cadastrar certificado.", error})
+    return res.status(400).json({msg: "Erro ao cadastrar certificado."})
   }
 }
 
@@ -42,9 +42,9 @@ export const listarCertificados = async (req, res) => {
 
   db.query(select, [id_usuario], (erro, certificados) => {
     if (erro)
-        return res.status(500).json({msg: "Erro ao consultar certificados.", erro})
+        return res.status(500).json({msg: "Erro ao consultar certificados."})
     else
-        return res.status(200).json({msg: "Certificados consultados com sucesso", certificados})
+        return res.status(200).json({msg: "Certificados consultados com sucesso.", certificados})
   })
 }
 
@@ -54,9 +54,9 @@ export const getInfoCert = async (req, res) => {
 
   db.query(select, [id_certificado], (erro, informacoes) => {
     if (erro)
-        return res.status(500).json({msg: "Erro ao consultar certificado.", erro})
+        return res.status(500).json({msg: "Erro ao consultar certificado."})
     else
-        return res.status(200).json({msg: "Certificados consultados com sucesso", informacoes})
+        return res.status(200).json({msg: "Certificados consultados com sucesso.", informacoes})
   })
 }
 
@@ -93,7 +93,7 @@ export const editCertificado = async (req, res) => {
                       })
                     }else{
                       fs.unlink(req.file.path, function (err){
-                        return res.status(201).json({msg: "Certificado atualizar com sucesso."})
+                        return res.status(200).json({msg: "Certificado atualizado com sucesso."})
                       })
                     }
                   })
@@ -108,7 +108,7 @@ export const editCertificado = async (req, res) => {
         if (erro)
             return res.status(400).json({msg: "Erro ao atualizar certificado.", erro})
         else   
-            return res.status(201).json({msg: "Certificado atualizado com sucesso."})
+            return res.status(200).json({msg: "Certificado atualizado com sucesso."})
       })
     }
 
@@ -137,7 +137,7 @@ export const excluirCertificado = async (req, res) => {
               if (erro)
                   return res.status(400).json({msg: "Erro ao excluir certificado.", erro})
               else   
-                  return res.status(201).json({msg: "Certificado excluído com sucesso."})
+                  return res.status(200).json({msg: "Certificado excluído com sucesso."})
             })
           }
         })
