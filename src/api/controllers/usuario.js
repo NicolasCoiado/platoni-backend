@@ -18,9 +18,7 @@ export const addUsuario = async (req, res) => {
         return res.status(201).json({ msg: "Usuário cadastrado com sucesso." });
     });
   } catch (error) {
-    return res
-      .status(400)
-      .json({ msg: "Erro ao cadastrar usuário.", dados: req.body });
+    return res.status(400).json({ msg: "Erro ao cadastrar usuário." });
   }
 };
 
