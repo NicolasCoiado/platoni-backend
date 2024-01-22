@@ -32,17 +32,14 @@ export const login = async (req, res) => {
     const select =
       "SELECT id_usuario, senha, banimento FROM usuarios WHERE email=?";
     db.query(select, [email], async (erro, resultado) => {
-      const idBanco = resultado[0].id_usuario;
-      const senhaBanco = resultado[0].senha;
-      const banimentoBanco = resultado[0].banimento;
       if (erro) {
         res.status(500).json({ msg: "Erro ao realizar a autenticação." });
       } else {
-        if (!resultado[0]) {
-          return res
-            .status(400)
-            .json({ msg: "Senha incorreta ou e-mail não cadastrado." });
-        } else {
+        const usuario = resultado[0];
+        if (usuario !== undefined) {
+          const idBanco = usuario.id_usuario;
+          const senhaBanco = usuario.senha;
+          const banimentoBanco = usuario.banimento;
           if (banimentoBanco === 0) {
             const checkSenha = bcrypt.compareSync(senha, senhaBanco);
             if (!checkSenha) {
@@ -64,6 +61,10 @@ export const login = async (req, res) => {
           } else {
             return res.status(403).json({ msg: "Usuário banido." });
           }
+        } else {
+          return res
+            .status(400)
+            .json({ msg: "Senha incorreta ou e-mail não cadastrado." });
         }
       }
     });
