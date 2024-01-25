@@ -51,7 +51,7 @@ export const login = async (req, res) => {
               const id_user = { id: idBanco };
               const token = jwt.sign(id_user, secret, {
                 noTimestamp: true,
-                expiresIn: 7000,
+                expiresIn: "1h",
               });
               res.status(200).json({
                 msg: "Autenticação realizada com sucesso",
