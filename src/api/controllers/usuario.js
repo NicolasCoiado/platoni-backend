@@ -336,6 +336,7 @@ export const exclusaoUsuario = async (req, res) => {
   const { id, token } = req.body;
   const consulta =
     "SELECT COUNT(*) AS qtdUsuarios FROM usuarios WHERE id_usuario = ?;";
+  const exclusaoCert = "DELETE FROM certificados WHERE id_usuario=?;";
   const exclusao = "DELETE FROM usuarios WHERE id_usuario=?;";
 
   if (!id || !token) {
@@ -347,11 +348,18 @@ export const exclusaoUsuario = async (req, res) => {
       } else {
         const qtdUsuarios = resultado[0].qtdUsuarios;
         if (qtdUsuarios == 0) {
-          return res.status(422).json({ msg: "Erro ao consultar usuário." });
+          return res.status(422).json({ msg: "Erro ao consultar conta." });
         } else if (qtdUsuarios == 1) {
-          db.query(exclusao, [id], async (erro, resultado) => {
-            if (erro) res.status(400).json({ msg: "Erro ao exluir conta." });
-            else return res.status(200).json({ msg: "Usuário excluído." });
+          db.query(exclusaoCert, id, async (erro, result) => {
+            if (erro) {
+              return res.status(400).json({ msg: "Erro ao exluir conta." });
+            } else {
+              db.query(exclusao, [id], async (erro, resultado) => {
+                if (erro)
+                  res.status(400).json({ msg: "Erro ao exluir conta." });
+                else return res.status(200).json({ msg: "Usuário excluído." });
+              });
+            }
           });
         } else {
           return res.status(400).json({ msg: "Erro ao exluir conta." });

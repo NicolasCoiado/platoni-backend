@@ -40,6 +40,8 @@ O projeto exige as seguintes tecnologias instaladas:
 * Após preencher as informações sensíveis, execute o comando `npm install` e após isso, acesse a pasta src com seu terminal, e execute o comando `node server.js` .
 
 Pronto, agora seu projeto já está em funcionamento :)
+## Observações
+Por conta de limitações no cliente Axios, utilizado no consumo desta API, precisei substituir os verbos HTTP GET e DELETE por POST e PUT. As limitações citadas, ocorrem pois não é possível passar parâmetros no corpo das requisições que utilizam os verbos supracitados.
 
 ## Duvidas
 Caso tenha tido alguma dúvida ao tentar executar o projeto, indico os seguintes conteúdos:
