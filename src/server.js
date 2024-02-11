@@ -7,7 +7,7 @@ import routesCert from "./api/routes/rota-certificado.js";
 import fs from "fs";
 import "dotenv/config";
 
-const rawdata = fs.readFileSync("./docs/swagger.json");
+const rawdata = fs.readFileSync("./src/docs/swagger.json");
 const swaggerDocument = JSON.parse(rawdata);
 
 const app = express();
