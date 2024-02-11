@@ -14,6 +14,7 @@ export const addCertificado = async (req, res) => {
     let urlImg;
     let id_url;
     cloudinary.uploader.upload(req.file.path, function (err, result) {
+      console.log(req.file);
       if (err) {
         return res.status(500).json({ msg: "Erro ao cadastrar certificado." });
       } else {
