@@ -14,6 +14,7 @@ export const addCertificado = async (req, res) => {
     let id_url;
     cloudinary.uploader.upload(req.file.path, function (erra, result) {
       if (erra) {
+        console.log(erra);
         return res.status(500).json({ msg: "Erro ao cadastrar certificado." });
       } else {
         urlImg = result.secure_url;
@@ -23,13 +24,16 @@ export const addCertificado = async (req, res) => {
           [nome_certificado, emissor, descricao, urlImg, id_usuario, id_url],
           (errou) => {
             if (errou) {
+              console.log(errou);
               fs.unlink(req.file.path, function (erro) {
+                console.log(erro);
                 return res
                   .status(400)
                   .json({ msg: "Erro ao cadastrar certificado." });
               });
             } else {
               fs.unlink(req.file.path, function (err) {
+                console.log(err);
                 return res
                   .status(201)
                   .json({ msg: "Certificado cadastrado com sucesso." });
@@ -40,6 +44,7 @@ export const addCertificado = async (req, res) => {
       }
     });
   } catch (error) {
+    console.log(error);
     return res.status(400).json({ msg: "Erro ao cadastrar certificado." });
   }
 };
