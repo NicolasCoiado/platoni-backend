@@ -24,20 +24,26 @@ export const addCertificado = async (req, res) => {
           [nome_certificado, emissor, descricao, urlImg, id_usuario, id_url],
           (errou) => {
             if (errou) {
-              console.log(errou);
-              fs.unlink(req.file.path, function (erro) {
-                console.log(erro);
-                return res
-                  .status(400)
-                  .json({ msg: "Erro ao cadastrar certificado." });
-              });
+              return res
+                .status(400)
+                .json({ msg: "Erro ao cadastrar certificado." });
+              // console.log(errou);
+              // fs.unlink(req.file.path, function (erro) {
+              //   console.log(erro);
+              //   return res
+              //     .status(400)
+              //     .json({ msg: "Erro ao cadastrar certificado." });
+              // });
             } else {
-              fs.unlink(req.file.path, function (err) {
-                console.log(err);
-                return res
-                  .status(201)
-                  .json({ msg: "Certificado cadastrado com sucesso." });
-              });
+              return res
+                .status(201)
+                .json({ msg: "Certificado cadastrado com sucesso." });
+              // fs.unlink(req.file.path, function (err) {
+              //   console.log(err);
+              //   return res
+              //     .status(201)
+              //     .json({ msg: "Certificado cadastrado com sucesso." });
+              // });
             }
           }
         );
