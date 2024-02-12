@@ -6,16 +6,14 @@ export const addCertificado = async (req, res) => {
   const { nome_certificado, emissor, descricao, id_usuario } = req.body;
   const insert =
     "INSERT INTO certificados (nome_certificado, emissor, descricao, url, id_usuario, id_url) VALUES (?,?,?,?,?,?)";
-
   if (!req.file || !id_usuario) {
     return res.status(422).json({ msg: "O campo de imagem é obrigatório." });
   }
   try {
     let urlImg;
     let id_url;
-    cloudinary.uploader.upload(req.file.path, function (err, result) {
-      console.log(req.file);
-      if (err) {
+    cloudinary.uploader.upload(req.file.path, function (erra, result) {
+      if (erra) {
         return res.status(500).json({ msg: "Erro ao cadastrar certificado." });
       } else {
         urlImg = result.secure_url;
@@ -23,9 +21,9 @@ export const addCertificado = async (req, res) => {
         db.query(
           insert,
           [nome_certificado, emissor, descricao, urlImg, id_usuario, id_url],
-          (erro) => {
-            if (erro) {
-              fs.unlink(req.file.path, function (err) {
+          (errou) => {
+            if (errou) {
+              fs.unlink(req.file.path, function (erro) {
                 return res
                   .status(400)
                   .json({ msg: "Erro ao cadastrar certificado." });
