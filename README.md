@@ -25,7 +25,7 @@ O projeto exige as seguintes tecnologias instaladas:
 * [Git](https://git-scm.com/)
 
 ### Passo a passo
- Se sua máquina já cumpre os requisitos de instalação, você deve primeiramente clonar este projeto, utilizando o comando `git clone https://github.com/NicolasCoiado/platoni.git` em seu terminal.
+ Se sua máquina já cumpre os requisitos de instalação, você deve primeiramente clonar este projeto, utilizando o comando `git clone https://github.com/NicolasCoiado/platoni-backend.git` em seu terminal.
 
 * Com o projeto clonado em sua máquina, agora execute o seguinte comando:
 
